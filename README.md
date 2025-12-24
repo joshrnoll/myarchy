@@ -2,6 +2,8 @@
 
 Personal Arch Linux system setup and configuration automation.
 
+It's like [Omarchy](https://omarchy.org/), but just for me.
+
 ## What It Does
 
 Automates a complete Arch Linux installation with:
