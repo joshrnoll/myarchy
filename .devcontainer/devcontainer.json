@@ -1,0 +1,8 @@
+{
+  "name": "MyArchy Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "remoteUser": "josh"
+}
