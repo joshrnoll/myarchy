@@ -21,6 +21,9 @@ sudo pacman -R --noconfirm iptables || true
 # Ensure ~/.local/bin is in PATH
 export PATH="$HOME/.local/bin:$PATH"
 
+# Ensure git is installed
+sudo pacman -S --needed  --noconfirm git
+
 # Install yay (AUR helper) from source if not present
 if ! command -v yay &> /dev/null; then
   if [[ -d yay ]]; then
