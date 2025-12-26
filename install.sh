@@ -52,7 +52,7 @@ echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers
 echo "%sudo ALL=(ALL:ALL) ALL" > /etc/sudoers
 
 # Run userscript as new user
-sudo -u $NEW_USER -i bash ./userscript.sh
+runuser -u $NEW_USER /bin/bash ./userscript.sh
 
 # Enable ly display manager on tty2 and disable default getty
 if systemctl status ly@tty2.service; then # TODO: Find a better way to check if ly exists
