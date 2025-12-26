@@ -49,13 +49,12 @@ echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers
 echo "%sudo ALL=(ALL:ALL) ALL" > /etc/sudoers
 
 # Change to root user home dir and download userscript
-cd $HOME
-curl -L -O https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/userscript.sh
-chmod +x ./userscript.sh
-chown $NEW_USER:$NEW_USER ./userscript.sh 
+curl -L -O https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/userscript.sh /home/$NEW_USER
+chmod +x /home/$NEW_USER/userscript.sh
+chown $NEW_USER:$NEW_USER /home/$NEW_USER/userscript.sh 
 
 # Run userscript as new user
-runuser -u $NEW_USER /bin/bash $HOME/userscript.sh
+runuser -u $NEW_USER /bin/bash /home/$NEW_USER/userscript.sh
 
 # Enable ly display manager on tty2 and disable default getty
 if systemctl status ly@tty2.service; then # TODO: Find a better way to check if ly exists
