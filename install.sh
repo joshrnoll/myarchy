@@ -20,9 +20,11 @@ if [ $USER != "root" ]; then
 fi
 
 # Get user input for desired username and password
-read -p "Enter desired username: " NEW_USER
-read -sp "Enter password: " NEW_USER_PASSWORD
-read -sp "Confirm password: " PASSWORD_CONFIRMATION
+read -p "Enter desired username: " NEW_USER </dev/tty
+read -sp "Enter password: " NEW_USER_PASSWORD </dev/tty
+echo ""
+read -sp "Confirm password: " PASSWORD_CONFIRMATION </dev/tty
+echo ""
 
 if [ $NEW_USER_PASSWORD != $PASSWORD_CONFIRMATION ]; then
   echo "Passwords do not match. Exiting... "
