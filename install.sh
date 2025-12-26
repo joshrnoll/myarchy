@@ -41,9 +41,16 @@ pacman -Rdd --noconfirm iptables || true # Remove conflicting iptables package, 
 pacman -S --noconfirm iptables-nft # Install iptables-nft to avoid conflicts when installing packages.txt
 pacman -S --needed --noconfirm git base-devel sudo # Install necessary base packages to run the rest of the script
 
+# Create sudo group if not created
+if ! getent group sudo &> /dev/null; then
+  groupadd sudo 
+fi
+
 # Create desired user account with passwordless sudo privileges
 useradd -m -p $NEW_USER_PASSWORD -G sudo $NEW_USER
 echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers
+echo "%sudo ALL=(ALL:ALL) ALL" > /etc/sudoers
+
 
 # Ensure ~/.local/bin is in PATH
 export PATH="$HOME/.local/bin:$PATH"
