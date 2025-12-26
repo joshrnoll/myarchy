@@ -31,9 +31,6 @@ if [ $NEW_USER_PASSWORD != $PASSWORD_CONFIRMATION ]; then
   exit 1
 fi
 
-# Change to root user home dir and download userscript
-cd $HOME
-curl -L -O https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/userscript.sh
 
 # Update pacman and install necessary packages to run the rest of the script
 pacman -Syu --noconfirm
@@ -50,6 +47,12 @@ fi
 useradd -m -p $NEW_USER_PASSWORD -G sudo $NEW_USER
 echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers
 echo "%sudo ALL=(ALL:ALL) ALL" > /etc/sudoers
+
+# Change to root user home dir and download userscript
+cd $HOME
+curl -L -O https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/userscript.sh
+chmod +x ./userscript.sh
+chown $NEW_USER:$NEW_USER ./userscript.sh 
 
 # Run userscript as new user
 runuser -u $NEW_USER /bin/bash ./userscript.sh
