@@ -14,9 +14,34 @@ echo ""
 echo "Like Omarchy, but it's mine."
 echo ""
 
-# Update pacman and remove conflicting iptables package
-sudo pacman -Syu --noconfirm
-sudo pacman -R --noconfirm iptables || true
+if [ $USER != "root" ]; then
+  echo "This script must be run as root"
+  exit 1
+fi
+
+# Get user input for desired username and password
+NEW_USER=$(read -p "Enter desired username: ")
+NEW_USER_PASSWORD=$(read -sp "Enter password: ")
+PASSWORD_CONFIRMATION=$(read -sp "Confirm password: ")
+
+if [ $NEW_USER_PASSWORD != $PASSWORD_CONFIRMATION ]; then
+  echo "Passwords do not match. Exiting... "
+  exit 1
+fi
+
+# Change to root user home dir and download packages.txt
+cd $HOME
+curl -L -O https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/packages.txt
+
+# Update pacman and install necessary packages to run the rest of the script
+pacman -Syu --noconfirm
+pacman -Rdd --noconfirm iptables || true # Remove conflicting iptables package, skipping dependency checks
+pacman -S --noconfirm iptables-nft # Install iptables-nft to avoid conflicts when installing packages.txt
+pacman -S --needed --noconfirm git base-devel sudo # Install necessary base packages to run the rest of the script
+
+# Create desired user account with passwordless sudo privileges
+useradd -m -p $NEW_USER_PASSWORD -G sudo $NEW_USER
+echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers
 
 # Ensure ~/.local/bin is in PATH
 export PATH="$HOME/.local/bin:$PATH"
@@ -26,10 +51,10 @@ if ! command -v yay &> /dev/null; then
   if [[ -d yay ]]; then
     rm -rf yay/
   fi
-  sudo pacman -S --needed --noconfirm git base-devel
   git clone https://aur.archlinux.org/yay.git
   cd yay
   makepkg -si --noconfirm
+  cd $HOME
 else
   echo "Yay already installed... YAY!"
 fi
@@ -42,8 +67,8 @@ else
 fi
 
 # Install all packages from packages.txt
-if [ -f "packages.txt" ]; then
-  yay -S --needed --noconfirm $(cat packages.txt)
+if [ -f "$HOME/packages.txt" ]; then
+  yay -S --needed --noconfirm $(cat $HOME/packages.txt)
 else
   echo "No packages.txt found! Exiting..."
   exit 1
@@ -51,18 +76,18 @@ fi
 
 # Enable ly display manager on tty2 and disable default getty
 if systemctl status ly@tty2.service; then # TODO: Find a better way to check if ly exists
-  sudo systemctl enable ly@tty2.service
-  sudo systemctl disable getty@tty2.service
+  systemctl enable ly@tty2.service
+  systemctl disable getty@tty2.service
 fi
 
 # Initialize and apply dotfiles using chezmoi
 if [ ! -d "$HOME/.local/share/chezmoi" ]; then
-  chezmoi init https://github.com/joshrnoll/dotfiles.git
-  chezmoi apply
+  sudo -u $NEW_USER chezmoi init https://github.com/joshrnoll/dotfiles.git
+  sudo -u $NEW_USER chezmoi apply
 else
   echo "Chezmoi not installed. Skipping dotfile installation..."
 fi
 
 echo "Installation complete! Rebooting..."
 
-sudo systemctl reboot
+systemctl reboot

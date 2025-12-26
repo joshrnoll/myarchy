@@ -15,7 +15,7 @@ claude-code
 claude-code-acp
 cockpit
 cockpit-machines
-devpod
+devpod-cli
 dmidecode
 dnsmasq
 docker
