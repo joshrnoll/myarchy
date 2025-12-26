@@ -55,7 +55,7 @@ chmod +x ./userscript.sh
 chown $NEW_USER:$NEW_USER ./userscript.sh 
 
 # Run userscript as new user
-runuser -u $NEW_USER /bin/bash ./userscript.sh
+runuser -u $NEW_USER /bin/bash $HOME/userscript.sh
 
 # Enable ly display manager on tty2 and disable default getty
 if systemctl status ly@tty2.service; then # TODO: Find a better way to check if ly exists
