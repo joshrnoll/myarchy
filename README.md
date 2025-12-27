@@ -16,19 +16,17 @@ Automates a complete Arch Linux installation with:
 
 ## Prerequisites
 
-**IMPORTANT**: Configure passwordless sudo before running:
-
-```bash
-echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
-```
+A minimal arch install with root login. _The script will create your user account with passwordless sudo for you_.
 
 ## Installation
 
+Log in as root and run:
+
 ```bash
-./install.sh
+curl https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/install.sh | bash
 ```
 
-The script is idempotent and can be re-run safely.
+The script is designed to be idempotent so that it can be re-run safely.
 
 ## Package Management
 
@@ -43,7 +41,10 @@ vagrant up && vagrant ssh
 ```
 
 **Dev Container**:
-Open in VS Code with Remote Containers extension.
+Run `devpod up .` from the project directory.
+
+> [!NOTE]
+> The dev container does not have access to systemd or wayland and is therefore limited to testing basic script functionality.
 
 ## What Gets Configured
 
