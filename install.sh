@@ -44,9 +44,10 @@ if ! getent group sudo &> /dev/null; then
 fi
 
 # Create desired user account with passwordless sudo privileges
-useradd -m -p $NEW_USER_PASSWORD -G sudo $NEW_USER
-echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers
-echo "%sudo ALL=(ALL:ALL) ALL" > /etc/sudoers
+useradd -m -G sudo $NEW_USER
+echo "$NEW_USER:$NEW_USER_PASSWORD" | chpasswd
+echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+echo "%sudo ALL=(ALL:ALL) ALL" >> /etc/sudoers
 
 # Change to root user home dir and download userscript
 curl -L -o /home/$NEW_USER https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/userscript.sh
