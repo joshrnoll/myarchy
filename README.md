@@ -14,6 +14,15 @@ Automates a complete Arch Linux installation with:
 - All Nerd Fonts
 - Personal dotfiles from [joshrnoll/dotfiles](https://github.com/joshrnoll/dotfiles) via chezmoi
 
+## "What if I want to use it?"
+
+You can! You're just going to have my dotfiles. They are installed using [chezmoi](https://chezmoi.io). To use your own, you'll need to run:
+
+```bash
+chezmoi init <your-repo-url>
+chezmoi apply
+```
+
 ## Prerequisites
 
 A minimal arch install with root login. _The script will create your user account with passwordless sudo for you_.

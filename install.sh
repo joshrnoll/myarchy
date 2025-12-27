@@ -4,17 +4,27 @@ set -eou pipefail
 
 clear
 
-# Display MyArchy logo
-echo ""
-echo "  ███╗   ███╗██╗   ██╗ █████╗ ██████╗  ██████╗██╗  ██╗██╗   ██╗"
-echo "  ████╗ ████║╚██╗ ██╔╝██╔══██╗██╔══██╗██╔════╝██║  ██║╚██╗ ██╔╝"
-echo "  ██╔████╔██║ ╚████╔╝ ███████║██████╔╝██║     ███████║ ╚████╔╝ "
-echo "  ██║╚██╔╝██║  ╚██╔╝  ██╔══██║██╔══██╗██║     ██╔══██║  ╚██╔╝  "
-echo "  ██║ ╚═╝ ██║   ██║   ██║  ██║██║  ██║╚██████╗██║  ██║   ██║   "
-echo "  ╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝   ╚═╝   "
-echo ""
-echo "Like Omarchy, but it's mine."
-echo ""
+cat << 'EOF'
+
+  ███╗   ███╗██╗   ██╗ █████╗ ██████╗  ██████╗██╗  ██╗██╗   ██╗
+  ████╗ ████║╚██╗ ██╔╝██╔══██╗██╔══██╗██╔════╝██║  ██║╚██╗ ██╔╝
+  ██╔████╔██║ ╚████╔╝ ███████║██████╔╝██║     ███████║ ╚████╔╝
+  ██║╚██╔╝██║  ╚██╔╝  ██╔══██║██╔══██╗██║     ██╔══██║  ╚██╔╝
+  ██║ ╚═╝ ██║   ██║   ██║  ██║██║  ██║╚██████╗██║  ██║   ██║
+  ╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝   ╚═╝
+
+  Like Omarchy, but it's mine.
+
+  ═══════════════════════════════════════════════════════════════
+
+  ⚠️  NOTICE
+
+  This script will create a user with passwordless sudo privileges.
+  Part of this script will be ran as this user.
+
+  ═══════════════════════════════════════════════════════════════
+
+EOF
 
 if [ $USER != "root" ]; then
   echo "This script must be run as root!"
@@ -58,16 +68,14 @@ chown $NEW_USER:$NEW_USER /home/$NEW_USER/userscript.sh
 # Run userscript as new user
 runuser -u $NEW_USER /bin/bash /home/$NEW_USER/userscript.sh
 
-# Enable ly display manager on tty2 and disable default getty
-# Check if ly binary and service file exist before enabling
-if [ -f /usr/bin/ly ] && [ -f /usr/lib/systemd/system/ly@.service ]; then
+# Enable ly display manager
+if ! systemctl status ly@tty2.service; then
   echo "Enabling ly display manager on tty2..."
   systemctl enable ly@tty2.service
   systemctl disable getty@tty2.service
 else
-  echo "Warning: ly display manager not found. Skipping ly configuration."
-  echo "  - ly binary exists: $([ -f /usr/bin/ly ] && echo 'Yes' || echo 'No')"
-  echo "  - ly service exists: $([ -f /usr/lib/systemd/system/ly@.service ] && echo 'Yes' || echo 'No')"
+  echo "Something went wrong..."
+  exit 2
 fi
 
 echo "Installation complete! Rebooting..."
