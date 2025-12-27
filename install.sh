@@ -2,6 +2,8 @@
 
 set -eou pipefail
 
+clear
+
 # Display MyArchy logo
 echo ""
 echo "  ███╗   ███╗██╗   ██╗ █████╗ ██████╗  ██████╗██╗  ██╗██╗   ██╗"
