@@ -50,7 +50,7 @@ echo "$NEW_USER:$NEW_USER_PASSWORD" | chpasswd
 echo "%sudo ALL=(ALL:ALL) ALL" >> /etc/sudoers
 echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Change to root user home dir and download userscript
+# Download userscript
 curl -L -o /home/$NEW_USER/userscript.sh https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/userscript.sh
 chmod +x /home/$NEW_USER/userscript.sh
 chown $NEW_USER:$NEW_USER /home/$NEW_USER/userscript.sh 
@@ -59,9 +59,15 @@ chown $NEW_USER:$NEW_USER /home/$NEW_USER/userscript.sh
 runuser -u $NEW_USER /bin/bash /home/$NEW_USER/userscript.sh
 
 # Enable ly display manager on tty2 and disable default getty
-if systemctl status ly@tty2.service; then # TODO: Find a better way to check if ly exists
+# Check if ly binary and service file exist before enabling
+if [ -f /usr/bin/ly ] && [ -f /usr/lib/systemd/system/ly@.service ]; then
+  echo "Enabling ly display manager on tty2..."
   systemctl enable ly@tty2.service
   systemctl disable getty@tty2.service
+else
+  echo "Warning: ly display manager not found. Skipping ly configuration."
+  echo "  - ly binary exists: $([ -f /usr/bin/ly ] && echo 'Yes' || echo 'No')"
+  echo "  - ly service exists: $([ -f /usr/lib/systemd/system/ly@.service ] && echo 'Yes' || echo 'No')"
 fi
 
 echo "Installation complete! Rebooting..."

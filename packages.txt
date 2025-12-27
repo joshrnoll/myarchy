@@ -13,8 +13,6 @@ chezmoi
 cifs-utils
 claude-code
 claude-code-acp
-cockpit
-cockpit-machines
 devpod-cli
 dmidecode
 dnsmasq
