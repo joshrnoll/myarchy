@@ -71,11 +71,8 @@ runuser -u $NEW_USER /bin/bash /home/$NEW_USER/userscript.sh
 # Enable ly display manager
 if ! systemctl status ly@tty2.service; then
   echo "Enabling ly display manager on tty2..."
-  systemctl enable ly@tty2.service
   systemctl disable getty@tty2.service
-else
-  echo "Something went wrong..."
-  exit 2
+  systemctl enable ly@tty2.service
 fi
 
 echo "Installation complete! Rebooting..."
