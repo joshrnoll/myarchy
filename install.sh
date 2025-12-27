@@ -50,7 +50,7 @@ echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 echo "%sudo ALL=(ALL:ALL) ALL" >> /etc/sudoers
 
 # Change to root user home dir and download userscript
-curl -L -o /home/$NEW_USER https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/userscript.sh
+curl -L -o /home/$NEW_USER/userscript.sh https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/userscript.sh
 chmod +x /home/$NEW_USER/userscript.sh
 chown $NEW_USER:$NEW_USER /home/$NEW_USER/userscript.sh 
 
