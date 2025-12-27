@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eoux pipefail
+set -eou pipefail
 
 # Display MyArchy logo
 echo ""
@@ -31,7 +31,6 @@ if [ $NEW_USER_PASSWORD != $PASSWORD_CONFIRMATION ]; then
   exit 1
 fi
 
-
 # Update pacman and install necessary packages to run the rest of the script
 pacman -Syu --noconfirm
 pacman -Rdd --noconfirm iptables || true # Remove conflicting iptables package, skipping dependency checks
@@ -46,8 +45,8 @@ fi
 # Create desired user account with passwordless sudo privileges
 useradd -m -G sudo $NEW_USER
 echo "$NEW_USER:$NEW_USER_PASSWORD" | chpasswd
-echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 echo "%sudo ALL=(ALL:ALL) ALL" >> /etc/sudoers
+echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Change to root user home dir and download userscript
 curl -L -o /home/$NEW_USER/userscript.sh https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/userscript.sh
