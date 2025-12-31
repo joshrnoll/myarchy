@@ -1,6 +1,8 @@
 # MyArchy
 
-Personal Arch Linux system setup and configuration automation.
+![MyArchy](./myarchy.png)
+
+My personal Arch Linux system setup and configuration automation.
 
 It's like [Omarchy](https://omarchy.org/), but just for me.
 
