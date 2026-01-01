@@ -27,6 +27,13 @@ else
   echo "Goose is already installed... HONK!"
 fi
 
+# Install homebrew
+if ! command -v brew &> /dev/null; then
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+else
+  echo "Homebrew is already installed... 🍺"
+fi
+
 # Install all packages from packages.txt
 if [ -f "$HOME/packages.txt" ]; then
   yay -S --needed --noconfirm $(cat $HOME/packages.txt)
