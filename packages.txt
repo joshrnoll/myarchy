@@ -73,7 +73,6 @@ ripgrep
 samba
 signal-desktop
 sops
-starship
 sudo
 swayidle
 swaync
