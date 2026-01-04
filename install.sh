@@ -31,6 +31,25 @@ if [ $USER != "root" ]; then
   exit 1
 fi
 
+while [ "$IS_JOSH" != "y" ] && [ "$IS_JOSH" != "n" ];
+do
+  read -p "Are you Josh? [y/n]: " IS_JOSH
+done
+
+if [ "$IS_JOSH" == "n" ]; then
+  IS_JOSH=0
+
+  while [ "$IS_JOSH" != "y" ] && [ "$IS_JOSH" != "n" ];
+  do
+    read -p "Are you the Josh that wrote this script? [y/n]: " IS_JOSH
+  done
+fi
+
+if [ "$IS_JOSH" == "n" ]; then
+  echo "You have indicated that you are not Josh (well, not the right one... there can only be one, you know)."
+  echo ""
+  echo "In this case, the script will NOT attempt to restore the home directory with borgmatic."
+
 # Get user input for desired username and password
 read -p "Enter desired username: " NEW_USER </dev/tty
 read -sp "Enter password: " NEW_USER_PASSWORD </dev/tty
