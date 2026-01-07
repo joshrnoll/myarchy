@@ -26,26 +26,26 @@ cat << 'EOF'
 
 EOF
 
-if [ $USER != "root" ]; then
+if [[ $USER != "root" ]]; then
   echo "This script must be run as root!"
   exit 1
 fi
 
-while [ "$IS_JOSH" != "y" ] && [ "$IS_JOSH" != "n" ];
+while [[ $IS_JOSH != "y" ]] && [[ $IS_JOSH != "n" ]];
 do
   read -p "Are you Josh? [y/n]: " IS_JOSH
 done
 
-if [ "$IS_JOSH" == "y" ]; then
+if [[ $IS_JOSH == "y" ]]; then
   IS_JOSH=0
 
-  while [ "$IS_JOSH" != "y" ] && [ "$IS_JOSH" != "n" ];
+  while [[ $IS_JOSH != "y" ]] && [[ $IS_JOSH != "n" ]];
   do
     read -p "Are you the Josh that wrote this script? [y/n]: " IS_JOSH
   done
 fi
 
-if [ "$IS_JOSH" == "n" ]; then
+if [[ $IS_JOSH == "n" ]]; then
   echo "You have indicated that you are not Josh (well, not the right one anyway... there can only be one, you know)."
   echo ""
   echo "In this case, the script will NOT attempt to restore the home directory with borgmatic."
@@ -66,12 +66,12 @@ echo ""
 read -sp "Confirm password: " PASSWORD_CONFIRMATION </dev/tty
 echo ""
 
-if [ $NEW_USER_PASSWORD != $PASSWORD_CONFIRMATION ]; then
+if [[ $NEW_USER_PASSWORD != $PASSWORD_CONFIRMATION ]]; then
   echo "Passwords do not match. Exiting... "
   exit 1
 fi
 
-if [ "$IS_JOSH" == "y"]; then
+if [[ $IS_JOSH == "y" ]]; then
 
   read -p "Enter TrueNAS server hostname/IP: " HOMESHARE_HOST
 
@@ -80,7 +80,7 @@ if [ "$IS_JOSH" == "y"]; then
   read -sp "Confirm password: " HOMESHARE_PASS_CONFIRMATION </dev/tty
   echo ""
 
-  if [ "$HOMESHARE_PASS" != "$HOMESHARE_PASS_CONFIRMATION" ]; then
+  if [[ $HOMESHARE_PASS != $HOMESHARE_PASS_CONFIRMATION ]]; then
     echo "Homeshare password not confirmed"
     exit 1
   fi
@@ -90,7 +90,7 @@ if [ "$IS_JOSH" == "y"]; then
   read -sp "Confirm borg repo passphrase : " BORG_REPO_PASS_CONFIRMATION </dev/tty
   echo ""
 
-  if [ "$BORG_REPO_PASS" != "$BORG_REPO_PASS_CONFIRMATION" ]; then
+  if [[ $BORG_REPO_PASS != $BORG_REPO_PASS_CONFIRMATION ]]; then
     echo "Borg repo password not confirmed"
     exit 1
   fi
@@ -123,7 +123,7 @@ if ! id -u $NEW_USER; then
 else
   # Add the user to the sudo group if they aren't already a member
   # and configure passwordless sudo if not already configured
-  if ! getent group sudo | grep "$NEW_USER"; then
+  if ! getent group sudo | grep -q "$NEW_USER"; then
     echo "User is not in the sudo group. Adding..."
     usermod -aG sudo $NEW_USER
   fi 
@@ -142,7 +142,8 @@ chown $NEW_USER:$NEW_USER /home/$NEW_USER/userscript.sh
 # Run userscript as new user
 runuser -u $NEW_USER /bin/bash /home/$NEW_USER/userscript.sh
 
-if [ "$IS_JOSH" == "y"]; then
+if [[ $IS_JOSH == "y" ]]; then
+
   # Create SMB creds file
   touch /root/.smbcredentials
   chown root /root/.smbcredentials
@@ -165,6 +166,11 @@ EOF
     mount -a
   fi
 
+  # Create symlink for borgmatic config
+  if [[ -d .borgmatic-etc ]]; then
+    ln -s ~/.borgmatic-etc /etc/borgmatic
+  fi
+
   # Download josh script (runs bormatic extract)
   curl -L -o /home/$NEW_USER/joshscript.sh https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/joshscript.sh
   chmod +x /home/$NEW_USER/joshscript.sh
@@ -185,5 +191,3 @@ fi
 echo "Installation complete! Rebooting..."
 
 systemctl reboot
-
-
