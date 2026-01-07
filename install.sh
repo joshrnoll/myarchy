@@ -31,14 +31,14 @@ if [[ $USER != "root" ]]; then
   exit 1
 fi
 
+IS_JOSH=""
 while [[ $IS_JOSH != "y" ]] && [[ $IS_JOSH != "n" ]];
 do
   read -p "Are you Josh? [y/n]: " IS_JOSH
 done
 
 if [[ $IS_JOSH == "y" ]]; then
-  IS_JOSH=0
-
+  IS_JOSH=""
   while [[ $IS_JOSH != "y" ]] && [[ $IS_JOSH != "n" ]];
   do
     read -p "Are you the Josh that wrote this script? [y/n]: " IS_JOSH
@@ -155,10 +155,8 @@ password=$HOMESHARE_PASS
 domain=WORKGROUP
 EOF
 
-  # TODO: Grep better
-  #
   # Add homeshare mount where borg repo is stored
-  if ! grep -q "# SMB mount for Homeshare" /etc/fstab; then
+  if ! grep -q "//$HOMESHARE_HOST/homeshare /home/$NEW_USER/homeshare" /etc/fstab; then
     cat << EOF >> /etc/fstab
 # SMB mount for Homeshare on truenas-01
 //$HOMESHARE_HOST/homeshare /home/$NEW_USER/homeshare cifs credentials=/root/.smbcredentials,uid=1000,gid=1000,file_mode=0755,dir_mode=0755 0 0
@@ -177,7 +175,7 @@ EOF
   chown $NEW_USER:$NEW_USER /home/$NEW_USER/joshscript.sh 
 
   # Run joshscript as new user (probably the user 'josh' but idk, maybe I got weird)
-  runuser -u $NEW_USER /bin/bash /home/$NEW_USER/joshscript.sh
+  runuser -u $NEW_USER /bin/bash /home/$NEW_USER/joshscript.sh "$BORG_REPO_PASS"
 fi
 
 # Enable ly display manager
