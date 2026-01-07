@@ -36,7 +36,7 @@ do
   read -p "Are you Josh? [y/n]: " IS_JOSH
 done
 
-if [ "$IS_JOSH" == "n" ]; then
+if [ "$IS_JOSH" == "y" ]; then
   IS_JOSH=0
 
   while [ "$IS_JOSH" != "y" ] && [ "$IS_JOSH" != "n" ];
@@ -46,11 +46,20 @@ if [ "$IS_JOSH" == "n" ]; then
 fi
 
 if [ "$IS_JOSH" == "n" ]; then
-  echo "You have indicated that you are not Josh (well, not the right one... there can only be one, you know)."
+  echo "You have indicated that you are not Josh (well, not the right one anyway... there can only be one, you know)."
   echo ""
   echo "In this case, the script will NOT attempt to restore the home directory with borgmatic."
+else
+  echo "You have indicated that you are Josh. If this is true, hello self."
+  echo ""
+  echo "If not, then you are a dirty liar, and the last part of this script will fail."
+  echo ""
+  echo "Try running it again without lying."
+  echo ""
+  sleep 
+fi
 
-# Get user input for desired username and password
+# Get user input for desired username and password(s)
 read -p "Enter desired username: " NEW_USER </dev/tty
 read -sp "Enter password: " NEW_USER_PASSWORD </dev/tty
 echo ""
@@ -60,6 +69,31 @@ echo ""
 if [ $NEW_USER_PASSWORD != $PASSWORD_CONFIRMATION ]; then
   echo "Passwords do not match. Exiting... "
   exit 1
+fi
+
+if [ "$IS_JOSH" == "y"]; then
+
+  read -p "Enter TrueNAS server hostname/IP: " HOMESHARE_HOST
+
+  read -sp "Enter homeshare password: " HOMESHARE_PASS </dev/tty
+  echo ""
+  read -sp "Confirm password: " HOMESHARE_PASS_CONFIRMATION </dev/tty
+  echo ""
+
+  if [ "$HOMESHARE_PASS" != "$HOMESHARE_PASS_CONFIRMATION" ]; then
+    echo "Homeshare password not confirmed"
+    exit 1
+  fi
+
+  read -sp "Enter borg repo passphrase: " BORG_REPO_PASS </dev/tty
+  echo ""
+  read -sp "Confirm borg repo passphrase : " BORG_REPO_PASS_CONFIRMATION </dev/tty
+  echo ""
+
+  if [ "$BORG_REPO_PASS" != "$BORG_REPO_PASS_CONFIRMATION" ]; then
+    echo "Borg repo password not confirmed"
+    exit 1
+  fi
 fi
 
 # Update pacman and install necessary packages to run the rest of the script
@@ -108,6 +142,38 @@ chown $NEW_USER:$NEW_USER /home/$NEW_USER/userscript.sh
 # Run userscript as new user
 runuser -u $NEW_USER /bin/bash /home/$NEW_USER/userscript.sh
 
+if [ "$IS_JOSH" == "y"]; then
+  # Create SMB creds file
+  touch /root/.smbcredentials
+  chown root /root/.smbcredentials
+  chmod 0600 /root/.smbcredentials 
+
+  cat << EOF > /root/.smbcredentials
+username=$NEW_USER
+password=$HOMESHARE_PASS
+domain=WORKGROUP
+EOF
+
+  # TODO: Grep better
+  #
+  # Add homeshare mount where borg repo is stored
+  if ! grep -q "# SMB mount for Homeshare" /etc/fstab; then
+    cat << EOF >> /etc/fstab
+# SMB mount for Homeshare on truenas-01
+//$HOMESHARE_HOST/homeshare /home/$NEW_USER/homeshare cifs credentials=/root/.smbcredentials,uid=1000,gid=1000,file_mode=0755,dir_mode=0755 0 0
+EOF
+    mount -a
+  fi
+
+  # Download josh script (runs bormatic extract)
+  curl -L -o /home/$NEW_USER/joshscript.sh https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/joshscript.sh
+  chmod +x /home/$NEW_USER/joshscript.sh
+  chown $NEW_USER:$NEW_USER /home/$NEW_USER/joshscript.sh 
+
+  # Run joshscript as new user (probably the user 'josh' but idk, maybe I got weird)
+  runuser -u $NEW_USER /bin/bash /home/$NEW_USER/joshscript.sh
+fi
+
 # Enable ly display manager
 if ! systemctl status ly@tty2.service; then
   echo "Enabling ly display manager on tty2..."
@@ -119,3 +185,5 @@ fi
 echo "Installation complete! Rebooting..."
 
 systemctl reboot
+
+
