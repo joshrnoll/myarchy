@@ -56,7 +56,6 @@ else
   echo ""
   echo "Try running it again without lying."
   echo ""
-  sleep 
 fi
 
 # Get user input for desired username and password(s)
