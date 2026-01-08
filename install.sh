@@ -167,11 +167,13 @@ domain=WORKGROUP
 EOF
 
   # Add homeshare mount where borg repo is stored
+  mkdir -p /home/$NEW_USER/homeshare
   if ! grep -q "//$HOMESHARE_HOST/homeshare /home/$NEW_USER/homeshare" /etc/fstab; then
     cat << EOF >> /etc/fstab
 # SMB mount for Homeshare on truenas-01
 //$HOMESHARE_HOST/homeshare /home/$NEW_USER/homeshare cifs credentials=/root/.smbcredentials,uid=1000,gid=1000,file_mode=0755,dir_mode=0755 0 0
 EOF
+    systemctl daemon-reload
     mount -a
   fi
 
@@ -180,13 +182,18 @@ EOF
     ln -s ~/.borgmatic-etc /etc/borgmatic
   fi
 
-  # Download josh script (runs bormatic extract)
-  curl -L -o /home/$NEW_USER/joshscript.sh https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/joshscript.sh
-  chmod +x /home/$NEW_USER/joshscript.sh
-  chown $NEW_USER:$NEW_USER /home/$NEW_USER/joshscript.sh 
+  if [[ -d /home/$NEW_USER/homeshare/myarchy-borg-repo ]]; then
+    # Download josh script (runs bormatic extract)
+    curl -L -o /home/$NEW_USER/joshscript.sh https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/joshscript.sh
+    chmod +x /home/$NEW_USER/joshscript.sh
+    chown $NEW_USER:$NEW_USER /home/$NEW_USER/joshscript.sh 
 
-  # Run joshscript as new user (probably the user 'josh' but idk, maybe I got weird)
-  runuser -u $NEW_USER /bin/bash /home/$NEW_USER/joshscript.sh "$BORG_REPO_PASS"
+    # Run joshscript as new user (probably the user 'josh' but idk, maybe I got weird)
+    runuser -u $NEW_USER /bin/bash /home/$NEW_USER/joshscript.sh "$BORG_REPO_PASS"
+  else
+    echo "Myarchy borg repo not found! Exiting..."
+    exit 1
+  fi
 fi
 
 # Enable ly display manager
