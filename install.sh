@@ -46,17 +46,29 @@ if [[ $IS_JOSH == "y" ]]; then
 fi
 
 if [[ $IS_JOSH == "n" ]]; then
-  echo "You have indicated that you are not Josh (well, not the right one anyway... there can only be one, you know)."
-  echo ""
-  echo "In this case, the script will NOT attempt to restore the home directory with borgmatic."
+  cat << EOF
+##############################
+
+You have indicated that you are not Josh (well, not the right one anyway... there can only be one, you know).
+
+In this case, the script will NOT attempt to restore the home directory with borgmatic.
+
+##############################
+EOF
 else
-  echo "You have indicated that you are Josh. If this is true, hello self."
-  echo ""
-  echo "If not, then you are a dirty liar, and the last part of this script will fail."
-  echo ""
-  echo "Try running it again without lying."
-  echo ""
+  cat << EOF
+##############################
+
+You have indicated that you are Josh. If this is true, hello self.
+
+If not, then you are a dirty liar, and the last part of this script will fail.
+
+Try running it again without lying.
+
+##############################
+EOF
 fi
+
 
 # Get user input for desired username and password(s)
 read -p "Enter desired username: " NEW_USER </dev/tty
