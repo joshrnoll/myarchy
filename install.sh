@@ -4,7 +4,7 @@ set -eou pipefail
 
 clear
 
-cat << 'EOF'
+cat << EOF
 
   ███╗   ███╗██╗   ██╗ █████╗ ██████╗  ██████╗██╗  ██╗██╗   ██╗
   ████╗ ████║╚██╗ ██╔╝██╔══██╗██╔══██╗██╔════╝██║  ██║╚██╗ ██╔╝
@@ -34,14 +34,14 @@ fi
 IS_JOSH=""
 while [[ $IS_JOSH != "y" ]] && [[ $IS_JOSH != "n" ]];
 do
-  read -p "Are you Josh? [y/n]: " IS_JOSH
+  read -p "Are you Josh? [y/n]: " IS_JOSH </dev/tty
 done
 
 if [[ $IS_JOSH == "y" ]]; then
   IS_JOSH=""
   while [[ $IS_JOSH != "y" ]] && [[ $IS_JOSH != "n" ]];
   do
-    read -p "Are you the Josh that wrote this script? [y/n]: " IS_JOSH
+    read -p "Are you the Josh that wrote this script? [y/n]: " IS_JOSH </dev/tty
   done
 fi
 
@@ -84,7 +84,7 @@ fi
 
 if [[ $IS_JOSH == "y" ]]; then
 
-  read -p "Enter TrueNAS server hostname/IP: " HOMESHARE_HOST
+  read -p "Enter TrueNAS server hostname/IP: " HOMESHARE_HOST </dev/tty
 
   read -sp "Enter homeshare password: " HOMESHARE_PASS </dev/tty
   echo ""
