@@ -46,7 +46,10 @@ fi
 if command -v chezmoi &> /dev/null; then
   if [ ! -d "$HOME/.local/share/chezmoi" ]; then
     chezmoi init https://github.com/joshrnoll/dotfiles.git
+    chezmoi cd
+    git pull origin main
     chezmoi apply
+    cd $HOME
   fi
 else
   echo "Chezmoi not installed. Skipping dotfile installation..."
