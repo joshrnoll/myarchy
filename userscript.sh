@@ -47,8 +47,12 @@ if command -v chezmoi &> /dev/null; then
   if [ ! -d "$HOME/.local/share/chezmoi" ]; then
     chezmoi init https://github.com/joshrnoll/dotfiles.git
     chezmoi cd
+    git checkout main
     git pull origin main
-    chezmoi apply
+
+    # Does not prompt for handling changes. Continues after encountering an error.
+    # https://www.chezmoi.io/reference/command-line-flags/global/#-force
+    chezmoi apply --force --keep-going     
     cd $HOME
   fi
 else
