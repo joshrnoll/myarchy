@@ -50,9 +50,16 @@ if command -v chezmoi &> /dev/null; then
     git checkout main
     git pull origin main
 
+    echo "APPLYING DOTFILES"
+
+    sleep 5
+
     # Does not prompt for handling changes. Continues after encountering an error.
     # https://www.chezmoi.io/reference/command-line-flags/global/#-force
-    chezmoi apply --force --keep-going     
+    chezmoi apply --force --keep-going
+
+    echo "EXIT CODE FOR CHEZMOI APPLY: $?"
+    sleep 5
     cd $HOME
   fi
 else
