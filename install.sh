@@ -177,11 +177,6 @@ EOF
     mount -a
   fi
 
-  # Create symlink for borgmatic config
-  if [[ -d .borgmatic-etc ]]; then
-    ln -s ~/.borgmatic-etc /etc/borgmatic
-  fi
-
   if [[ -d /home/$NEW_USER/homeshare/myarchy-borg-repo ]]; then
     # Download josh script (runs bormatic extract)
     curl -L -o /home/$NEW_USER/joshscript.sh https://raw.githubusercontent.com/joshrnoll/myarchy/refs/heads/main/joshscript.sh
