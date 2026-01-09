@@ -44,24 +44,14 @@ fi
 
 # Initialize and apply dotfiles using chezmoi
 if command -v chezmoi &> /dev/null; then
-  if [ ! -d "$HOME/.local/share/chezmoi" ]; then
-    chezmoi init https://github.com/joshrnoll/dotfiles.git
-    chezmoi cd
-    git checkout main
-    git pull origin main
+  chezmoi init https://github.com/joshrnoll/dotfiles.git
+  chezmoi cd
+  git checkout main
+  git pull origin main
 
-    echo "APPLYING DOTFILES"
-
-    sleep 5
-
-    # Does not prompt for handling changes. Continues after encountering an error.
-    # https://www.chezmoi.io/reference/command-line-flags/global/#-force
-    chezmoi apply --force --keep-going
-
-    echo "EXIT CODE FOR CHEZMOI APPLY: $?"
-    sleep 5
-    cd $HOME
-  fi
+  # Does not prompt for handling changes. Continues after encountering an error.
+  # https://www.chezmoi.io/reference/command-line-flags/global/#-force
+  chezmoi apply --force --keep-going
 else
   echo "Chezmoi not installed. Skipping dotfile installation..."
 fi
