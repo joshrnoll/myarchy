@@ -45,7 +45,7 @@ fi
 # Initialize and apply dotfiles using chezmoi
 if command -v chezmoi &> /dev/null; then
   chezmoi init https://github.com/joshrnoll/dotfiles.git
-  chezmoi cd
+  cd $(chezmoi source-path)
   git checkout main
   git pull origin main
 
