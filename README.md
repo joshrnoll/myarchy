@@ -1,5 +1,3 @@
-# MyArchy
-
 ![MyArchy](./myarchy.png)
 
 My personal Arch Linux configuration automation.
